@@ -1,5 +1,6 @@
 package it.unibo.oop.lab.mvcio;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -32,7 +33,7 @@ public class Controller {
      * to a software that runs correctly on every platform.
      */
     private static final String SEP = System.getProperty("file.separator");
-    private String currentFile;
+    private File currentFile;
     /**
      * CONSTRUCTOR.
      * 
@@ -40,27 +41,33 @@ public class Controller {
      * created {@link this#currentFile} is output.txt
      */
     public Controller() {
-        this.currentFile = "output.txt";
+        this.currentFile = new File(System.getProperty("user.home") + SEP + "output.txt");
     }
     /**
-     * This method sets a given file as 
+     * This method sets a given {@link File} as 
      * {@link this#currentFile}.
      * 
-     * @param fileName
-     *     name of the file to be set as current
-     *     example: "myfile.txt"
+     * @param file
+     *     {@link File} to be set as current
      */
-    public final void setCurrentFile(final String fileName) {
-        this.currentFile = fileName;
+    public final void setCurrentFile(final File file) {
+        this.currentFile = file;
+    }
+    /**
+     * 
+     * @return {@link this#currentFile}
+     */
+    public final File getCurrentFile() {
+        return this.currentFile;
     }
     /**
      * @return a {@link String} 
      *     that contains the path of {@link this#currentFile}
      *     example: using the default file would be
-     *     (Unix) ==> user/home/output.txt
+     *     (Unix) ==> "user/home/output.txt"
      */
     public final String getCurrentFilePath() {
-        return System.getProperty("user.home") + SEP + this.currentFile;
+        return this.currentFile.getPath();
     }
     /**
      * This method saves a given String, using serialization,
@@ -73,7 +80,7 @@ public class Controller {
      */
     public final void saveInCurrentFile(final String inputString) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(this.getCurrentFilePath()))) {
+                new FileOutputStream(this.currentFile))) {
             oos.writeObject(inputString);
         }
     }
