@@ -5,8 +5,16 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -14,6 +22,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+
 
 /**
  * This class is a simple application that writes a random number on a file.
@@ -33,7 +43,10 @@ public class BadIOGUI {
     private final JFrame frame = new JFrame(TITLE);
 
     /**
+     * A simple GUI with two buttons.
      * 
+     * {@link write} writes a random number in the file placed in {@link PATH}
+     * {@link read} reads the content of the file and prints it in {@link System#out}
      */
     public BadIOGUI() {
         final JPanel canvas = new JPanel();
@@ -63,20 +76,29 @@ public class BadIOGUI {
                 try (PrintStream ps = new PrintStream(PATH)) {
                     ps.print(rng.nextInt());
                 } catch (FileNotFoundException e1) {
-                    JOptionPane.showMessageDialog(frame, e1, "Error", JOptionPane.ERROR_MESSAGE);
-                    e1.printStackTrace();
+                    showErrorDialog(e1);
                 }
             }
         });
         read.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                /*
-                 * Prints a string to the standard output
-                 */
-                System.out.println("just a string");
+                try {
+                    for (final String line : Files.readAllLines(Paths.get(PATH))) {
+                        System.out.println(line);
+                    }
+                } catch (IOException e1) {
+                    showErrorDialog(e1);
+                }
             }
         });
+    }
+    /*
+     * Pops up a dialog showing the error
+     */
+    private void showErrorDialog(final Exception e) {
+        JOptionPane.showMessageDialog(frame, e, "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 
     private void display() {
