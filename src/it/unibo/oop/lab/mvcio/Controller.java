@@ -1,5 +1,9 @@
 package it.unibo.oop.lab.mvcio;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 /**
  * 
  */
@@ -27,5 +31,50 @@ public class Controller {
      * System.getProperty("file.separator"). The combined use of those methods leads
      * to a software that runs correctly on every platform.
      */
-
+    private static final String SEP = System.getProperty("file.separator");
+    private String currentFile;
+    /**
+     * CONSTRUCTOR.
+     * 
+     * By default, when a {@link Controller} object is 
+     * created {@link this#currentFile} is output.txt
+     */
+    public Controller() {
+        this.currentFile = "output.txt";
+    }
+    /**
+     * This method sets a given file as 
+     * {@link this#currentFile}.
+     * 
+     * @param fileName
+     *     name of the file to be set as current
+     *     example: "myfile.txt"
+     */
+    public final void setCurrentFile(final String fileName) {
+        this.currentFile = fileName;
+    }
+    /**
+     * @return a {@link String} 
+     *     that contains the path of {@link this#currentFile}
+     *     example: using the default file would be
+     *     (Unix) ==> user/home/output.txt
+     */
+    public final String getCurrentFilePath() {
+        return System.getProperty("user.home") + SEP + this.currentFile;
+    }
+    /**
+     * This method saves a given String, using serialization,
+     * into {@link this#currentFile}.
+     *
+     * @param inputString
+     *     this {@link String} is written in {@link this#currentFile}
+     *     in order to save it
+     * @throws {@link IOException}
+     */
+    public final void saveInCurrentFile(final String inputString) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(this.getCurrentFilePath()))) {
+            oos.writeObject(inputString);
+        }
+    }
 }
