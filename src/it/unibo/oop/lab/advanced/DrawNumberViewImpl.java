@@ -26,7 +26,9 @@ public final class DrawNumberViewImpl implements DrawNumberView {
     private final JFrame frame = new JFrame(FRAME_NAME);
 
     /**
+     * CONSTRUCTOR.
      * 
+     * Sets up the whole view
      */
     public DrawNumberViewImpl() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -109,6 +111,10 @@ public final class DrawNumberViewImpl implements DrawNumberView {
             throw new IllegalStateException("Unexpected result: " + res);
         }
         observer.resetGame();
+    }
+
+    public void displayError(final String message) {
+        JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

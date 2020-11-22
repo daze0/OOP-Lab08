@@ -1,12 +1,19 @@
 package it.unibo.oop.lab.advanced;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
 /**
  */
 public final class DrawNumberApp implements DrawNumberViewObserver {
 
-    private static final int MIN = 0;
-    private static final int MAX = 100;
-    private static final int ATTEMPTS = 10;
+    private static final String CONFIG_FILE = "config.yml";
+    private int min;
+    private int max;
+    private int attempts;
     private final DrawNumber model;
     private final DrawNumberView view;
 
@@ -14,7 +21,8 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      * 
      */
     public DrawNumberApp() {
-        this.model = new DrawNumberImpl(MIN, MAX, ATTEMPTS);
+        this.importConfig(CONFIG_FILE);
+        this.model = new DrawNumberImpl(this.min, this.max, this.attempts);
         this.view = new DrawNumberViewImpl();
         this.view.setObserver(this);
         this.view.start();
@@ -23,7 +31,7 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     @Override
     public void newAttempt(final int n) {
         try {
-            final DrawResult result = model.attempt(n);
+            final DrawResult result = this.model.attempt(n);
             this.view.result(result);
         } catch (IllegalArgumentException e) {
             this.view.numberIncorrect();
@@ -50,4 +58,20 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
         new DrawNumberApp();
     }
 
+    private void importConfig(final String configFile) {
+        final InputStream in = ClassLoader.getSystemResourceAsStream(configFile);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+            this.min = this.lastToken(br);
+            this.max = this.lastToken(br);
+            this.attempts = this.lastToken(br);
+        } catch (IOException e) {
+            this.view.displayError(e.getMessage());
+        } 
+    }
+
+    private int lastToken(final BufferedReader buffer) throws IOException {
+        final StringTokenizer tokenizer = new StringTokenizer(buffer.readLine(), ": ");
+        tokenizer.nextToken(); //skips the first one, we don't need it.
+        return Integer.parseInt(tokenizer.nextToken());
+    }
 }
