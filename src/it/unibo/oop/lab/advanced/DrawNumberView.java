@@ -35,5 +35,4 @@ public interface DrawNumberView {
      * @param message of the error
      */
     void displayError(String message);
-    
 }
